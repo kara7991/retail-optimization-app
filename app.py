@@ -30,56 +30,41 @@ VIZZES = {
 # -----------------------------
 # Responsive Tableau Embed
 # -----------------------------
-def embed_tableau(viz_src: str, min_height: int = 560):
-    """
-    Responsive embed for Tableau Public vizzes.
-    - width: 100%
-    - height: dynamic based on viewport (vh) + min-height fallback
-    """
+def embed_tableau(viz_src: str, min_height: int = 650):
     st.components.v1.html(
         f"""
         <script type="module" src="https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js"></script>
 
         <style>
-          /* Make Streamlit container breathe a bit */
+          /* prend toute la largeur */
           .viz-wrap {{
             width: 100%;
             max-width: 100%;
           }}
 
-          /* Dynamic height: use most of the viewport */
           tableau-viz {{
             width: 100% !important;
-            height: calc(100vh - 210px) !important; /* header + margins */
+            display: block !important;
+            height: calc(100vh - 180px) !important;
             min-height: {min_height}px !important;
           }}
 
-          /* Tablets */
-          @media (max-width: 1024px) {{
-            tableau-viz {{
-              height: calc(100vh - 190px) !important;
-              min-height: 520px !important;
-            }}
-          }}
-
-          /* Phones */
-          @media (max-width: 768px) {{
-            tableau-viz {{
-              height: calc(100vh - 150px) !important;
-              min-height: 480px !important;
-            }}
+          /* important: évite un conteneur trop étroit */
+          iframe {{
+            width: 100% !important;
           }}
         </style>
 
         <div class="viz-wrap">
           <tableau-viz
             src="{viz_src}"
+            device="desktop"
             toolbar="bottom"
             hide-tabs>
           </tableau-viz>
         </div>
         """,
-        height=950,          # Streamlit frame height (CSS handles real viz height)
+        height=950,
         scrolling=True,
     )
 
