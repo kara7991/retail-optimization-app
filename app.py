@@ -97,8 +97,8 @@ st.caption("Choose a dashboard — responsive display on all screens.")
 # Dashboard selector (the “bandeau” control you want)
 selected = st.radio(
     "Select dashboard",
-    options=list(VIZZES.keys()),
-    index=0
+    list(VIZZES.keys()),
+    horizontal=True
 )
 embed_tableau(VIZZES[selected])
 
