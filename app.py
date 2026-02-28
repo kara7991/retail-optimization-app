@@ -105,4 +105,3 @@ embed_tableau(VIZZES[selected])
 # -----------------------------
 # SHOW DASHBOARD
 # -----------------------------
-embed_tableau(VIZZES[selected])
