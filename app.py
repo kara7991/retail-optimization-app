@@ -96,10 +96,11 @@ st.caption("Choose a dashboard — responsive display on all screens.")
 
 # Dashboard selector (the “bandeau” control you want)
 st.markdown("### 📊 Dashboard")
-selected = st.selectbox(
+selected = st.radio(
     "",
     options=list(VIZZES.keys()),
-    index=0
+    index=0,
+    horizontal=True
 )
 
 # -----------------------------
