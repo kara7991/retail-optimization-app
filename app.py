@@ -23,19 +23,41 @@ VIZZES = {
     },
 }
 
-def embed_tableau(viz_src, height):
+def embed_tableau(viz_src: str):
     st.components.v1.html(
         f"""
         <script type="module" src="https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js"></script>
-        <tableau-viz
-          src="{viz_src}"
-          width="100%"
-          height="{height}"
-          toolbar="bottom"
-          hide-tabs>
-        </tableau-viz>
+
+        <style>
+          .viz-wrap {{
+            width: 100%;
+            max-width: 100%;
+          }}
+
+          tableau-viz {{
+            width: 100% !important;
+            height: calc(100vh - 200px) !important;
+            min-height: 600px !important;
+          }}
+
+          @media (max-width: 768px) {{
+            tableau-viz {{
+              height: calc(100vh - 150px) !important;
+              min-height: 500px !important;
+            }}
+          }}
+        </style>
+
+        <div class="viz-wrap">
+          <tableau-viz
+            src="{viz_src}"
+            toolbar="bottom"
+            hide-tabs>
+          </tableau-viz>
+        </div>
         """,
-        height=height + 50,
+        height=900,
+        scrolling=True,
     )
 
 # ---------------- SIDEBAR ----------------
