@@ -95,52 +95,12 @@ st.markdown("## 📊 Retail Revenue Optimization")
 st.caption("Choose a dashboard — responsive display on all screens.")
 
 # Dashboard selector (the “bandeau” control you want)
-import streamlit as st
-import streamlit.components.v1 as components
-
-VIZZES = {
-    "Revenue Optimization": "https://public.tableau.com/views/RevenueOptimizationPromotionImpactSimulator/RevenueOptimizationPromotionImpactSimulator",
-    "FP-Growth (Main)": "https://public.tableau.com/views/fp_growth/fp_growth1",
-    "FP-Growth (Advanced)": "https://public.tableau.com/views/fp_growth_2/fp_growth2",
-    "FP-Growth (Synthesis)": "https://public.tableau.com/views/fp_growth_synthese/Synthesefp_growth",
-}
-
-# Create HTML dropdown (non-editable)
-dropdown_html = f"""
-<select id="dashboardSelect" style="padding:8px; font-size:16px;">
-  {''.join([f'<option value="{v}">{k}</option>' for k,v in VIZZES.items()])}
-</select>
-
-<script>
-const select = document.getElementById("dashboardSelect");
-select.addEventListener("change", function() {{
-    window.parent.postMessage({{
-        type: "streamlit:setComponentValue",
-        value: this.value
-    }}, "*");
-}});
-</script>
-"""
-
-selected_url = components.html(dropdown_html, height=60)
-
-if selected_url is None:
-    selected_url = list(VIZZES.values())[0]
-
-# Embed Tableau
-st.components.v1.html(
-    f"""
-    <script type="module" src="https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js"></script>
-    <tableau-viz
-        src="{selected_url}"
-        width="100%"
-        height="800"
-        toolbar="bottom"
-        hide-tabs>
-    </tableau-viz>
-    """,
-    height=850,
+selected = st.radio(
+    "Select dashboard",
+    options=list(VIZZES.keys()),
+    index=0
 )
+embed_tableau(VIZZES[selected])
 
 # -----------------------------
 # SHOW DASHBOARD
