@@ -1,49 +1,72 @@
 import streamlit as st
-import pandas as pd
 
-st.set_page_config(page_title="Retail Revenue Optimization", layout="wide")
+# -----------------------------
+# Page config
+# -----------------------------
+st.set_page_config(
+    page_title="Retail Revenue Optimization",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
 
-# ---------------- TABLEAU DASHBOARDS ----------------
+# -----------------------------
+# Tableau vizzes (Public)
+# -----------------------------
 VIZZES = {
-    "Revenue Optimization": {
-        "src": "https://public.tableau.com/views/RevenueOptimizationPromotionImpactSimulator/RevenueOptimizationPromotionImpactSimulator",
-        "height": 860,
+    "Revenue Optimization & Promotion Impact Simulator": {
+        "src": "https://public.tableau.com/views/RevenueOptimizationPromotionImpactSimulator/RevenueOptimizationPromotionImpactSimulator"
     },
-    "FP-Growth (Main)": {
-        "src": "https://public.tableau.com/views/fp_growth/fp_growth1",
-        "height": 820,
+    "FP-Growth (fp_growth)": {
+        "src": "https://public.tableau.com/views/fp_growth/fp_growth1"
     },
-    "FP-Growth (Advanced)": {
-        "src": "https://public.tableau.com/views/fp_growth_2/fp_growth2",
-        "height": 820,
+    "FP-Growth (fp_growth_2)": {
+        "src": "https://public.tableau.com/views/fp_growth_2/fp_growth2"
     },
-    "FP-Growth (Synthesis)": {
-        "src": "https://public.tableau.com/views/fp_growth_synthese/Synthesefp_growth",
-        "height": 820,
+    "FP-Growth Synthesis": {
+        "src": "https://public.tableau.com/views/fp_growth_synthese/Synthesefp_growth"
     },
 }
 
-def embed_tableau(viz_src: str):
+# -----------------------------
+# Responsive Tableau Embed
+# -----------------------------
+def embed_tableau(viz_src: str, min_height: int = 560):
+    """
+    Responsive embed for Tableau Public vizzes.
+    - width: 100%
+    - height: dynamic based on viewport (vh) + min-height fallback
+    """
     st.components.v1.html(
         f"""
         <script type="module" src="https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js"></script>
 
         <style>
+          /* Make Streamlit container breathe a bit */
           .viz-wrap {{
             width: 100%;
             max-width: 100%;
           }}
 
+          /* Dynamic height: use most of the viewport */
           tableau-viz {{
             width: 100% !important;
-            height: calc(100vh - 200px) !important;
-            min-height: 600px !important;
+            height: calc(100vh - 210px) !important; /* header + margins */
+            min-height: {min_height}px !important;
           }}
 
+          /* Tablets */
+          @media (max-width: 1024px) {{
+            tableau-viz {{
+              height: calc(100vh - 190px) !important;
+              min-height: 520px !important;
+            }}
+          }}
+
+          /* Phones */
           @media (max-width: 768px) {{
             tableau-viz {{
               height: calc(100vh - 150px) !important;
-              min-height: 500px !important;
+              min-height: 480px !important;
             }}
           }}
         </style>
@@ -56,47 +79,47 @@ def embed_tableau(viz_src: str):
           </tableau-viz>
         </div>
         """,
-        height=900,
+        height=950,          # Streamlit frame height (CSS handles real viz height)
         scrolling=True,
     )
 
-# ---------------- SIDEBAR ----------------
+# -----------------------------
+# Sidebar Navigation (NO HOME)
+# -----------------------------
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Home", "Dashboards", "Decision Layer"])
+page = st.sidebar.radio("Go to", ["Dashboards", "Decision Layer"], index=0)
 
-# ---------------- HOME ----------------
-if page == "Home":
-    st.title("🛒 Retail Revenue Optimization")
-    st.markdown("### Business Question")
-    st.markdown(
-        "> **If we adopt these insights, how much money do we earn — and why?**"
-    )
+# -----------------------------
+# Page: Dashboards
+# -----------------------------
+if page == "Dashboards":
+    st.title("📊 Dashboards (Tableau)")
+    st.caption("Choose a dashboard and explore insights. The visualization auto-adjusts to your screen.")
 
-    st.markdown("### This tool combines:")
+    selected = st.selectbox("Select a dashboard", list(VIZZES.keys()))
+    embed_tableau(VIZZES[selected]["src"])
+
+    st.divider()
+    st.subheader("How to use (quick)")
     st.markdown(
         """
-- 📊 Tableau dashboards (exploration & insight)
-- 🧠 Advanced FP-Growth (bundle strategy)
-- 🧮 Python decision engine (ROI & profit impact)
-"""
+- Use the **filters** inside the dashboard to compare scenarios (discount %, uplift %, bundle effect).
+- Focus on **profit & ROI** indicators, not only revenue.
+- Then go to **Decision Layer** to quantify business impact with transparent assumptions.
+        """
     )
 
-# ---------------- DASHBOARDS ----------------
-elif page == "Dashboards":
-    st.title("📊 Interactive Dashboards")
-
-    selected = st.selectbox("Select dashboard", list(VIZZES.keys()))
-    embed_tableau(VIZZES[selected]["src"], VIZZES[selected]["height"])
-
-# ---------------- DECISION LAYER ----------------
-elif page == "Decision Layer":
-
-    st.title("🧮 Promotion ROI Decision Engine")
+# -----------------------------
+# Page: Decision Layer
+# -----------------------------
+else:
+    st.title("🧮 Decision Layer (Python) — Promotion ROI Engine")
+    st.caption("A transparent calculation layer to quantify expected profit impact & ROI.")
 
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        base_revenue = st.number_input("Base Revenue (€)", value=150_000_000, step=1_000_000)
+        base_revenue = st.number_input("Base Revenue (€)", min_value=0, value=150_000_000, step=1_000_000)
         margin = st.slider("Margin %", 0, 80, 30)
 
     with col2:
@@ -107,54 +130,60 @@ elif page == "Decision Layer":
         targeting_eff = st.slider("Targeting Efficiency %", 0, 100, 30)
         adoption = st.slider("Adoption Rate %", 0, 100, 30)
 
+    # Normalize
     m = margin / 100
     d = discount / 100
     u = uplift / 100
     te = targeting_eff / 100
-    adopt = adoption / 100
+    a = adoption / 100
 
-    # Untargeted
+    # Baseline
+    baseline_profit = base_revenue * m
+
+    # Untargeted promotion (everyone gets discount)
     rev_u = base_revenue * (1 + u) * (1 - d)
     prof_u = rev_u * m
+    delta_u = prof_u - baseline_profit
 
-    # Targeted (optimized uplift + reduced discount waste)
-    rev_t = base_revenue * (1 + u * (1 + te)) * (1 - d * (1 - te))
+    # Targeted promotion (less discount waste + better uplift on targeted group)
+    # Simple model:
+    # - Only "adoption" part is affected
+    # - Discount waste reduced by targeting efficiency (effective discount cost reduced)
+    effective_discount = d * (1 - te)
+    targeted_uplift = u * (1 + te)
+
+    rev_t = base_revenue * ((1 - a) * 1 + a * (1 + targeted_uplift)) * (1 - effective_discount)
     prof_t = rev_t * m
+    delta_t = prof_t - baseline_profit
 
-    profit_delta = prof_t - prof_u
-    profit_delta_adopted = profit_delta * adopt
-    roi = profit_delta / (base_revenue * d + 1e-9)
+    # ROI proxy: profit delta divided by discount "cost"
+    discount_cost_u = base_revenue * d
+    discount_cost_t = base_revenue * effective_discount
 
-    st.markdown("---")
+    roi_u = delta_u / (discount_cost_u + 1e-9)
+    roi_t = delta_t / (discount_cost_t + 1e-9)
 
+    st.divider()
     k1, k2, k3, k4 = st.columns(4)
-    k1.metric("Untargeted Profit (€)", f"{prof_u:,.0f}")
-    k2.metric("Targeted Profit (€)", f"{prof_t:,.0f}")
-    k3.metric("Profit Δ Adopted (€)", f"{profit_delta_adopted:,.0f}")
-    k4.metric("ROI (proxy)", f"{roi:.2f}")
+    k1.metric("Baseline Profit (€)", f"{baseline_profit:,.0f}")
+    k2.metric("Profit Δ Untargeted (€)", f"{delta_u:,.0f}")
+    k3.metric("Profit Δ Targeted (€)", f"{delta_t:,.0f}")
+    k4.metric("ROI (Targeted) proxy", f"{roi_t:.2f}")
 
-    if profit_delta_adopted <= 0:
-        st.error("❌ Not profitable — reduce discount or improve targeting.")
-    elif roi < 1:
-        st.warning("⚠️ Profitable but weak ROI — optimize targeting.")
+    st.divider()
+    st.subheader("Recommendation")
+    if delta_t > delta_u and delta_t > 0:
+        st.success("✅ Targeted promotion is the best option under current assumptions (higher profit impact than untargeted).")
+    elif delta_u > 0 and delta_u >= delta_t:
+        st.warning("⚠ Untargeted promotion performs better (or targeted is not efficient enough).")
     else:
-        st.success("🚀 Strong ROI — strategy recommended.")
+        st.error("❌ Promotion may destroy value under these assumptions. Reduce discount or improve targeting/uplift.")
 
-    # Export scenario
-    df = pd.DataFrame([{
-        "base_revenue": base_revenue,
-        "margin_pct": margin,
-        "discount_pct": discount,
-        "uplift_pct": uplift,
-        "targeting_eff_pct": targeting_eff,
-        "adoption_pct": adoption,
-        "profit_delta_adopted": profit_delta_adopted,
-        "roi": roi
-    }])
-
-    st.download_button(
-        "Download Scenario (CSV)",
-        df.to_csv(index=False),
-        "scenario.csv",
-        "text/csv"
+    st.subheader("Notes (assumptions)")
+    st.markdown(
+        """
+- This is a simplified financial model to **support decisions quickly**.
+- Tableau dashboards remain the **exploration layer**; Python provides an **auditable decision layer**.
+- Targeted promotions reduce discount waste (targeting efficiency) and increase uplift on the engaged group (adoption rate).
+        """
     )
