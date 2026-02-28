@@ -20,8 +20,6 @@ st.markdown(
         padding-top: 1rem !important;
         padding-bottom: 1rem !important;
       }
-
-      /* Optional: reduce top whitespace on mobile */
       @media (max-width: 768px) {
         .block-container {
           padding-left: 0.6rem !important;
@@ -34,57 +32,72 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.title("📊 Retail Revenue Optimization")
+# -----------------------------
+# DASHBOARD LIST
+# -----------------------------
+VIZZES = {
+    "Revenue Optimization": "https://public.tableau.com/views/RevenueOptimizationPromotionImpactSimulator/RevenueOptimizationPromotionImpactSimulator",
+    "FP-Growth (Main)": "https://public.tableau.com/views/fp_growth/fp_growth1",
+    "FP-Growth (Advanced)": "https://public.tableau.com/views/fp_growth_2/fp_growth2",
+    "FP-Growth (Synthesis)": "https://public.tableau.com/views/fp_growth_synthese/Synthesefp_growth",
+}
+
+def embed_tableau(viz_src: str):
+    st.components.v1.html(
+        f"""
+        <script type="module" src="https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js"></script>
+
+        <style>
+          .viz-wrap {{
+            width: 100%;
+            max-width: 100%;
+          }}
+
+          tableau-viz {{
+            width: 100% !important;
+            display: block !important;
+            height: calc(100vh - 230px) !important; /* header + selector space */
+            min-height: 650px !important;
+          }}
+
+          @media (max-width: 1024px) {{
+            tableau-viz {{
+              height: calc(100vh - 210px) !important;
+              min-height: 560px !important;
+            }}
+          }}
+
+          @media (max-width: 768px) {{
+            tableau-viz {{
+              height: calc(100vh - 190px) !important;
+              min-height: 500px !important;
+            }}
+          }}
+        </style>
+
+        <div class="viz-wrap">
+          <tableau-viz
+            src="{viz_src}"
+            device="desktop"
+            toolbar="bottom"
+            hide-tabs>
+          </tableau-viz>
+        </div>
+        """,
+        height=900,
+        scrolling=True,
+    )
 
 # -----------------------------
-# TABLEAU DASHBOARD (RESPONSIVE)
+# HEADER (BANDEAU)
 # -----------------------------
-DASHBOARD_URL = "https://public.tableau.com/views/RevenueOptimizationPromotionImpactSimulator/RevenueOptimizationPromotionImpactSimulator"
+st.markdown("## 📊 Retail Revenue Optimization")
+st.caption("Choose a dashboard — responsive display on all screens.")
 
-st.components.v1.html(
-    f"""
-    <script type="module" src="https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js"></script>
+# Dashboard selector (the “bandeau” control you want)
+selected = st.selectbox("Select dashboard", list(VIZZES.keys()), index=0)
 
-    <style>
-      .viz-wrap {{
-        width: 100%;
-        max-width: 100%;
-      }}
-
-      /* Responsive sizing: use viewport height minus Streamlit UI space */
-      tableau-viz {{
-        width: 100% !important;
-        display: block !important;
-        height: calc(100vh - 170px) !important;
-        min-height: 650px !important;
-      }}
-
-      /* Tablets */
-      @media (max-width: 1024px) {{
-        tableau-viz {{
-          height: calc(100vh - 150px) !important;
-          min-height: 560px !important;
-        }}
-      }}
-
-      /* Phones */
-      @media (max-width: 768px) {{
-        tableau-viz {{
-          height: calc(100vh - 120px) !important;
-          min-height: 500px !important;
-        }}
-      }}
-    </style>
-
-    <div class="viz-wrap">
-      <tableau-viz
-        src="{DASHBOARD_URL}"
-        device="desktop"
-        toolbar="bottom"
-        hide-tabs>
-      </tableau-viz>
-    </div>
-    """,
-    height=900,
-    scrolling=True,
-)
+# -----------------------------
+# SHOW DASHBOARD
+# -----------------------------
+embed_tableau(VIZZES[selected])
