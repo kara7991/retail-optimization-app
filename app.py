@@ -91,7 +91,6 @@ def embed_tableau(viz_src: str):
 # HEADER (BANDEAU)
 # -----------------------------
 st.markdown("## 📊 Retail Revenue Optimization")
-st.caption("Choose a dashboard")
 
 # Dashboard selector (the “bandeau” control you want)
 selected = st.radio(
