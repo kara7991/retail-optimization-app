@@ -39,7 +39,6 @@ VIZZES = {
     "Revenue Optimization": "https://public.tableau.com/views/RevenueOptimizationPromotionImpactSimulator/RevenueOptimizationPromotionImpactSimulator",
     "FP-Growth (Main)": "https://public.tableau.com/views/fp_growth/fp_growth1",
     "FP-Growth (Advanced)": "https://public.tableau.com/views/fp_growth_2/fp_growth2",
-    "FP-Growth (Synthesis)": "https://public.tableau.com/views/fp_growth_synthese/Synthesefp_growth",
 }
 
 def embed_tableau(viz_src: str):
@@ -92,7 +91,7 @@ def embed_tableau(viz_src: str):
 # HEADER (BANDEAU)
 # -----------------------------
 st.markdown("## 📊 Retail Revenue Optimization")
-st.caption("Choose a dashboard — responsive display on all screens.")
+st.caption("Choose a dashboard")
 
 # Dashboard selector (the “bandeau” control you want)
 selected = st.radio(
@@ -101,7 +100,3 @@ selected = st.radio(
     horizontal=True
 )
 embed_tableau(VIZZES[selected])
-
-# -----------------------------
-# SHOW DASHBOARD
-# -----------------------------
