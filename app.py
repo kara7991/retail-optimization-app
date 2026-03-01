@@ -9,7 +9,9 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# Streamlit container: full width + clean padding
+# -----------------------------
+# GLOBAL STYLE
+# -----------------------------
 st.markdown(
     """
     <style>
@@ -20,6 +22,7 @@ st.markdown(
         padding-top: 1rem !important;
         padding-bottom: 1rem !important;
       }
+
       @media (max-width: 768px) {
         .block-container {
           padding-left: 0.6rem !important;
@@ -41,6 +44,9 @@ VIZZES = {
     "FP-Growth (Advanced)": "https://public.tableau.com/views/fp_growth_2/fp_growth2",
 }
 
+# -----------------------------
+# TABLEAU EMBED FUNCTION
+# -----------------------------
 def embed_tableau(viz_src: str):
     st.components.v1.html(
         f"""
@@ -55,20 +61,20 @@ def embed_tableau(viz_src: str):
           tableau-viz {{
             width: 100% !important;
             display: block !important;
-            height: calc(100vh - 230px) !important; /* header + selector space */
+            height: calc(100vh - 200px) !important;
             min-height: 650px !important;
           }}
 
           @media (max-width: 1024px) {{
             tableau-viz {{
-              height: calc(100vh - 210px) !important;
+              height: calc(100vh - 180px) !important;
               min-height: 560px !important;
             }}
           }}
 
           @media (max-width: 768px) {{
             tableau-viz {{
-              height: calc(100vh - 190px) !important;
+              height: calc(100vh - 160px) !important;
               min-height: 500px !important;
             }}
           }}
@@ -88,15 +94,29 @@ def embed_tableau(viz_src: str):
     )
 
 # -----------------------------
-# HEADER (BANDEAU)
+# HEADER
 # -----------------------------
-st.markdown("## 📊 Retail Revenue Optimization")
+st.markdown("## 📊 Retail Revenue Optimization Platform")
 
+# -----------------------------
+# TABS (Dashboards first, Demo second)
+# -----------------------------
+tab_dash, tab_demo = st.tabs(["📊 Dashboards", "🎥 Demo"])
 
-# Dashboard selector (the “bandeau” control you want)
-selected = st.radio(
-    "Select dashboard",
-    list(VIZZES.keys()),
-    horizontal=True
-)
-embed_tableau(VIZZES[selected])
+# -----------------------------
+# DASHBOARD TAB
+# -----------------------------
+with tab_dash:
+    selected = st.radio(
+        "",
+        list(VIZZES.keys()),
+        horizontal=True
+    )
+    embed_tableau(VIZZES[selected])
+
+# -----------------------------
+# DEMO TAB
+# -----------------------------
+with tab_demo:
+    st.markdown("### 🎥 Web Application Demo")
+    st.video("https://youtu.be/2VXUZStPEtM")
