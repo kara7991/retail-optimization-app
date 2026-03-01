@@ -101,7 +101,7 @@ st.markdown("## 📊 Retail Revenue Optimization Platform")
 # -----------------------------
 # TABS (Dashboards first, Demo second)
 # -----------------------------
-tab_dash, tab_demo = st.tabs(["📊 Dashboards", "🎥 Demo"])
+tab_dash, tab_demo = st.tabs(["📊 Dashboards", "🎥 Demo Video"])
 
 # -----------------------------
 # DASHBOARD TAB
@@ -118,5 +118,5 @@ with tab_dash:
 # DEMO TAB
 # -----------------------------
 with tab_demo:
-    st.markdown("### 🎥 Web Application Demo")
+    st.markdown("### 🎥 Demo Dashboard")
     st.video("https://youtu.be/2VXUZStPEtM")
